@@ -1,3 +1,7 @@
+1.3.4-beta
+===============================
+- Upgrade dependencies
+
 1.3.3-beta
 ===============================
 - Upgrade dependencies
