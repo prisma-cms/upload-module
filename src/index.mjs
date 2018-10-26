@@ -1,4 +1,11 @@
 
-import Module from "./modules";
+import ImagesMiddleware from "./middleware/ImageThumb";
 
-export default Module
+import PrismaUploadModule from "./modules";
+
+export {
+  ImagesMiddleware,
+  PrismaUploadModule,
+}
+
+export default PrismaUploadModule
