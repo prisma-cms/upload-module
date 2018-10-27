@@ -1,9 +1,0 @@
-
-"""
-Example
-
-type User {
-  id: ID! @unique
-  username: String
-}
-"""
