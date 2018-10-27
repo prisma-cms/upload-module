@@ -1,6 +1,9 @@
 
+import expect from "expect";
 
-import module from "./module";
+import TestModule from "./default/module";
+
+const module = new TestModule();
 
 const resolvers = module.getResolvers();
 

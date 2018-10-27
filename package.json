@@ -12,17 +12,20 @@
   "scripts": {
     "start": "action=start-server node --experimental-modules src/server",
     "deploy": "NODE_ENV=test node --experimental-modules src/server/scripts/deploy/with-prisma",
-    "build-api": "node --experimental-modules src/server/scripts/deploy/api-only"
+    "build-api": "node --experimental-modules src/server/scripts/deploy/api-only",
+    "test": "NODE_OPTIONS=\"--experimental-modules\" yarn mocha --delay src/__tests__/"
   },
   "dependencies": {
     "@prisma-cms/prisma-module": "^1.1.0-beta",
+    "chalk": "^2.4.1",
     "merge-graphql-schemas": "^1.5.7",
     "sharp": "0.21.0",
-    "chalk": "^2.4.1",
     "shortid": "^2.2.13"
   },
   "devDependencies": {
-    "@prisma-cms/server": "^2.1.5-beta"
+    "@prisma-cms/server": "^2.1.5-beta",
+    "expect": "^23.6.0",
+    "mocha": "^5.2.0"
   },
   "resolutions": {
     "graphql": "14.0.2"

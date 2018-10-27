@@ -1,0 +1,15 @@
+
+"""
+Example
+
+type User {
+  id: ID! @unique
+  username: String
+}
+"""
+
+
+type Test {
+  id: ID! @unique
+  username: String
+}
