@@ -244,11 +244,11 @@ const verifySchema = function (schema) {
 }
 
 
-// describe('Verify prisma Schema', () => {
+describe('Verify prisma Schema', () => {
 
-//   verifySchema(module.getSchema());
+  verifySchema(module.getSchema());
 
-// });
+});
 
 
 describe('Verify API Schema', () => {
