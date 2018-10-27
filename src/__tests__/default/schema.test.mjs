@@ -54,7 +54,7 @@ const requiredTypes = [
   {
     name: "TestUserCreateInput",
     fields: {
-      both: [
+      api: [
         "testUsername",
       ],
     },
@@ -63,13 +63,11 @@ const requiredTypes = [
     name: "TestEnumFields",
     fields: {
       both: [
-        "TestField",
       ],
       api: [
         "TestField",
       ],
       prisma: [
-        "TestField",
       ],
     },
   },
@@ -94,10 +92,7 @@ const requiredTypes = [
 ]
 
 
- 
-
-
-const verifyTypes = function (types, requiredTypes, verbose = true) {
+const verifyTypes = function (types, requiredTypes, verbose = false) {
 
 
   if (verbose) {
