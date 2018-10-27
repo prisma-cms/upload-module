@@ -1,3 +1,7 @@
+1.3.6-beta
+===============================
+- Fix multiupload
+
 1.3.5-beta
 ===============================
 - Upgrade dependencies

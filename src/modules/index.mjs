@@ -48,8 +48,8 @@ class PrismaUploadModule extends PrismaModule {
       },
 
       Mutation: {
-        singleUpload: (parent, args, ctx, info) => this.singleUpload(parent, args, ctx, info),
-        multipleUpload: (parent, args, ctx, info) => this.multipleUpload(parent, args, ctx, info),
+        singleUpload: this.singleUpload.bind(this),
+        multipleUpload: this.multipleUpload.bind(this),
       },
     });
 
@@ -220,7 +220,10 @@ class PrismaUploadModule extends PrismaModule {
 
       return await ctx.db.mutation.createFile({
         data: file,
-      }, info);
+      }, info)
+        .catch(error => {
+          throw error;
+        });
     }
     else {
       throw new Error(`Can not upload file ${filename}`);
@@ -259,7 +262,7 @@ class PrismaUploadModule extends PrismaModule {
   }
 
 
-  uploadAll(queue) {
+  uploadAll(tasks) {
 
     return new Promise(async (resolve, reject) => {
 
@@ -268,7 +271,7 @@ class PrismaUploadModule extends PrismaModule {
         reject: [],
       }
 
-      let processor = this.processUploadGenerator(queue);
+      let processor = this.processUploadGenerator(tasks);
 
       for await (const n of processor) {
 
@@ -293,7 +296,7 @@ class PrismaUploadModule extends PrismaModule {
 
       const task = tasks.splice(0, 1)[0];
 
-      const result = await task()
+      const result = await task
         .catch(error => {
           return error;
         });
