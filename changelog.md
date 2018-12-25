@@ -1,3 +1,7 @@
+1.3.9
+===============================
+- Get api schema relative path
+
 1.3.8-beta
 ===============================
 - Upgrade dependencies

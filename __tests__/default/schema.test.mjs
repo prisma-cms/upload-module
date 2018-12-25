@@ -92,7 +92,7 @@ const requiredTypes = [
 ]
 
 
-const verifyTypes = function (types, requiredTypes, verbose = false) {
+export const verifyTypes = function (types, requiredTypes, verbose = false) {
 
 
   if (verbose) {
@@ -198,7 +198,7 @@ const verifyTypes = function (types, requiredTypes, verbose = false) {
             ;
 
         }
- 
+
 
         if (!finded) {
           throw (`Can not find field ${name}:${fieldName}`);
@@ -214,7 +214,7 @@ const verifyTypes = function (types, requiredTypes, verbose = false) {
 
 
 
-const verifySchema = function (schema) {
+export const verifySchema = function (schema, requiredTypes) {
 
   const ast = parse(schema);
 
@@ -241,14 +241,14 @@ const verifySchema = function (schema) {
 
 describe('Verify prisma Schema', () => {
 
-  verifySchema(module.getSchema());
+  verifySchema(module.getSchema(), requiredTypes);
 
 });
 
 
 describe('Verify API Schema', () => {
 
-  verifySchema(module.getApiSchema());
+  verifySchema(module.getApiSchema(), requiredTypes);
 
 });
 
