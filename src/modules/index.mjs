@@ -44,7 +44,9 @@ class PrismaUploadModule extends PrismaModule {
       authRequired,
 
       Query: {
+        file: (parent, args, ctx, info) => this.file(parent, args, ctx, info),
         files: (parent, args, ctx, info) => this.files(parent, args, ctx, info),
+        filesConnection: (parent, args, ctx, info) => this.filesConnection(parent, args, ctx, info),
       },
 
       Mutation: {
@@ -122,9 +124,23 @@ class PrismaUploadModule extends PrismaModule {
 
 
 
+  file(source, args, ctx, info) {
+
+    return ctx.db.query.file({}, info);
+
+  }
+
+
   files(source, args, ctx, info) {
 
     return ctx.db.query.files({}, info);
+
+  }
+
+
+  filesConnection(source, args, ctx, info) {
+
+    return ctx.db.query.filesConnection({}, info);
 
   }
 

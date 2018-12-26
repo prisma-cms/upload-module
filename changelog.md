@@ -1,3 +1,8 @@
+1.3.10
+===============================
+- Added file resolver
+- Added filesConnection resolver
+
 1.3.9
 ===============================
 - Get api schema relative path
