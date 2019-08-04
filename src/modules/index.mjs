@@ -147,11 +147,11 @@ class PrismaUploadModule extends PrismaModule {
 
   async singleUpload(parent, args, ctx, info) {
 
-    const {
-      file: upload,
-    } = args;
+    // const {
+    //   file: upload,
+    // } = args;
 
-    return await this.processUpload(upload, ctx, info);
+    return await this.processUpload(parent, args, ctx, info);
 
   }
 
@@ -164,7 +164,11 @@ class PrismaUploadModule extends PrismaModule {
 
 
     let { resolve, reject } = await this.uploadAll(files.map(upload => {
-      return this.processUpload(upload, ctx, info);
+      return this.processUpload(parent, {
+        data: {
+          file: upload,
+        },
+      }, ctx, info);
     }));
 
     if (reject.length) {
@@ -184,50 +188,157 @@ class PrismaUploadModule extends PrismaModule {
   }
 
 
-  storeFS({ stream, filename }) {
+  async storeFS({
+    stream,
+    filename,
+    directory,
+  }) {
 
     const {
-      uploadDir,
+      uploadDir: baseDir,
     } = this;
 
-    // Ensure upload directory exists
-    mkdirp.sync(uploadDir)
+    const baseDirAbsolute = path.resolve(baseDir);
+
+    // console.log("baseDirAbsolute", baseDirAbsolute);
+
+    let uploadDir = path.join(baseDir, directory || "");
+
+    // console.log("uploadDir", uploadDir);
+
+    mkdirp.sync(uploadDir);
+
+    // await mkdirp(uploadDir);
 
     const id = shortid.generate()
 
-    const path = `${uploadDir}/${id}-${filename}`
+    // const file = `${uploadDir}/${id}-${filename}`;
 
-    return new Promise((resolve, reject) =>
-      stream
-        .on('error', error => {
-          if (stream.truncated)
-            // Delete the truncated file
-            unlinkSync(path)
-          reject(error)
-        })
-        .on('end', () => resolve({ id, path }))
-        .pipe(createWriteStream(path))
-    )
+    const file = path.join(uploadDir, `${id}-${filename}`);
+
+
+    // console.log("baseDir", baseDir);
+
+    // console.log("file path", file);
+
+    let resolved = path.resolve(file);
+
+    const normalized = path.normalize(resolved);
+
+    // console.log("file path.resolve()", resolved);
+    // console.log("file normalized", normalized);
+
+    // console.log("file .relative()", path.relative(baseDir, normalized));
+
+    if (!normalized.startsWith(baseDirAbsolute)) {
+      throw new Error("Wrong directory");
+    }
+
+
+    // return;
+
+    return new Promise((resolve, reject) => {
+
+      try {
+
+        const pipe = createWriteStream(file);
+
+        pipe.on('error', function (err) {
+          console.error(err);
+          reject(err);
+        });
+
+        stream
+          .on('error', error => {
+
+            if (stream.truncated) {
+              // Delete the truncated file
+              try {
+                unlinkSync(file)
+              }
+              catch (error) {
+
+                console.error(error);
+
+                reject();
+
+              }
+            }
+
+            reject(error)
+          })
+          .on('end', () => resolve({
+            id,
+            path: file,
+          }))
+          .pipe(pipe)
+      }
+      catch (error) {
+        console.error(error);
+      }
+
+    })
   }
 
 
-  async processUpload(upload, ctx, info) {
+  async processUpload(parent, args, ctx, info) {
+
+    // console.log("processUpload args", JSON.stringify(args, true, 2));
 
 
-    let file = {};
+    let {
+      file: upload,
+      data,
+    } = args;
 
-    this.assignUser(file, ctx);
+    let {
+      file,
+      directory,
+      ...other
+    } = data || {};
+
+    upload = file ? file : upload;
+
+
+
+    // return await this.storeFS({
+    //   // stream,
+    //   filename: "ssds/test.jpg",
+    //   directory,
+    // });
+
+
+
+    if (!upload) {
+      throw new Error("Can not get file");
+    }
+
+
+    let uploaded = {};
+
+    this.assignUser(uploaded, ctx);
 
     const { stream, filename, mimetype, encoding } = await upload;
 
-    const writeResult = await this.storeFS({ stream, filename })
+    const writeResult = await this.storeFS({
+      stream,
+      filename,
+      directory,
+    })
+    // .
+    //   catch(error => {
+
+    //     console.error("error", error);
+
+    //   })
 
     const { path } = writeResult;
 
 
     if (path) {
 
-      Object.assign(file, {
+      Object.assign(uploaded, {
+        ...other,
         filename,
         mimetype,
         encoding,
@@ -235,7 +346,7 @@ class PrismaUploadModule extends PrismaModule {
       });
 
       return await ctx.db.mutation.createFile({
-        data: file,
+        data: uploaded,
       }, info)
         .catch(error => {
           throw error;

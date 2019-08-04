@@ -3,8 +3,20 @@
 
 type Mutation {
 
-  singleUpload (file: Upload!): File
-  multipleUpload (files: [Upload!]!): [File!] 
+  singleUpload (
+    """Deprecated. Use SingleUploadInput instead."""
+    file: Upload
+    data: SingleUploadInput
+  ): File
+
+  multipleUpload (
+    files: [Upload!]!
+  ): [File!] 
 
 }
 
+input SingleUploadInput {
+  file: Upload
+  name: String
+  directory: String
+}

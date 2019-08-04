@@ -3,7 +3,8 @@
 type File {
   id: ID! @unique
   path: String!
-  filename: String!
+  name: String
+  filename: String @deprecated(reason: "Will be removed soon")
   mimetype: String!
   encoding: String!
   # CreatedBy: User! @relation(name: "UserFiles")
