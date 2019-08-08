@@ -11,4 +11,5 @@ type File {
 
   # Используется для фиксации уникальных файлов
   hash: String
+  size: Float @default(value: 0)
 }

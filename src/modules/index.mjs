@@ -318,7 +318,13 @@ class PrismaUploadModule extends PrismaModule {
 
     this.assignUser(uploaded, ctx);
 
-    const { stream, filename, mimetype, encoding } = await upload;
+    const {
+      stream,
+      filename,
+      mimetype,
+      encoding,
+    } = await upload;
+
 
     const writeResult = await this.storeFS({
       stream,
@@ -332,10 +338,18 @@ class PrismaUploadModule extends PrismaModule {
 
     //   })
 
+
     const { path } = writeResult;
 
 
+    
     if (path) {
+      
+      const stats = fs.statSync(path);
+
+      const {
+        size,
+      } = stats;
 
       Object.assign(uploaded, {
         ...other,
@@ -343,6 +357,7 @@ class PrismaUploadModule extends PrismaModule {
         mimetype,
         encoding,
         path: path.replace(/^\.\//, ''),
+        size,
       });
 
       return await ctx.db.mutation.createFile({
