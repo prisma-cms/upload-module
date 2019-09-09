@@ -1,0 +1,22 @@
+
+type Mutation {
+
+  createFileProcessor(
+    data: FileCreateInput!
+  ): FileResponse!
+
+  updateFileProcessor(
+    data: FileUpdateInput!
+    where: FileWhereUniqueInput!
+  ): FileResponse!
+
+}
+
+
+type FileResponse{
+  success: Boolean!
+  message: String
+  errors: [Error!]!
+  data: File
+}
+

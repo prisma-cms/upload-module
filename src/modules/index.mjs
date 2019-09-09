@@ -1,9 +1,10 @@
 
 import fs from "fs";
 
-import chalk from "chalk";
+// import chalk from "chalk";
 
 import PrismaModule from "@prisma-cms/prisma-module";
+import PrismaProcessor from "@prisma-cms/prisma-processor";
 
 import MergeSchema from 'merge-graphql-schemas';
 
@@ -22,6 +23,87 @@ const { fileLoader, mergeTypes } = MergeSchema
 
 
 
+
+export class FileProcessor extends PrismaProcessor {
+
+  constructor(props) {
+
+    super(props);
+
+    this.objectType = "File";
+
+    this.private = true;
+    this.ownable = true;
+  }
+
+
+  // async create(method, args, info) {
+
+  //   if (args.data) {
+
+  //     let {
+  //       ...data
+  //     } = args.data;
+
+  //     args.data = data;
+
+  //   }
+
+  //   return super.create(method, args, info);
+  // }
+
+
+  async update(method, args, info) {
+
+    if (args.data) {
+
+      let {
+
+        /**
+         * Пока логика не проработана, эти поля не позволяем менять
+         */
+        path,
+        filename,
+        encoding,
+        hash,
+        size,
+
+        ...data
+      } = args.data;
+
+      args.data = data;
+
+    }
+
+    return super.update(method, args, info);
+  }
+
+
+  async mutate(method, args, info) {
+
+    // if (args.data) {
+
+    //   let {
+    //     ...data
+    //   } = args.data;
+
+    //   args.data = data;
+
+    // }
+
+    return super.mutate(method, args);
+  }
+
+
+
+  // async delete(method, args, info) {
+
+  //   return super.delete(method, args);
+  // }
+}
+
+
+
 class PrismaUploadModule extends PrismaModule {
 
 
@@ -35,7 +117,7 @@ class PrismaUploadModule extends PrismaModule {
     super(props);
 
     const {
-      authRequired = false,
+      authRequired = true,
     } = props;
 
 
@@ -52,6 +134,15 @@ class PrismaUploadModule extends PrismaModule {
       Mutation: {
         singleUpload: this.singleUpload.bind(this),
         multipleUpload: this.multipleUpload.bind(this),
+        createFileProcessor: (source, args, ctx, info) => {
+          return this.getProcessor(ctx).createWithResponse("File", args, info);
+        },
+        updateFileProcessor: (source, args, ctx, info) => {
+          return this.getProcessor(ctx).updateWithResponse("File", args, info);
+        },
+        deleteFile: (source, args, ctx, info) => {
+          return this.getProcessor(ctx).delete("File", args, info);
+        },
       },
     });
 
@@ -103,6 +194,16 @@ class PrismaUploadModule extends PrismaModule {
   }
 
 
+  getProcessor(ctx) {
+    return new (this.getProcessorClass())(ctx);
+  }
+
+
+  getProcessorClass() {
+    return FileProcessor;
+  }
+
+
   getResolvers() {
 
 
@@ -116,6 +217,20 @@ class PrismaUploadModule extends PrismaModule {
 
 
     Object.assign(resolvers, {
+      FileResponse: {
+        data: (source, args, ctx, info) => {
+
+          const {
+            id,
+          } = source.data || {};
+
+          return id ? ctx.db.query.file({
+            where: {
+              id,
+            },
+          }, info) : null;
+        },
+      },
     });
 
 
@@ -151,7 +266,7 @@ class PrismaUploadModule extends PrismaModule {
     //   file: upload,
     // } = args;
 
-    return await this.processUpload(parent, args, ctx, info);
+    return this.processUpload(parent, args, ctx, info);
 
   }
 
@@ -301,14 +416,6 @@ class PrismaUploadModule extends PrismaModule {
 
 
 
-    // return await this.storeFS({
-    //   // stream,
-    //   filename: "ssds/test.jpg",
-    //   directory,
-    // });
-
-
-
     if (!upload) {
       throw new Error("Can not get file");
     }
@@ -342,9 +449,9 @@ class PrismaUploadModule extends PrismaModule {
     const { path } = writeResult;
 
 
-    
+
     if (path) {
-      
+
       const stats = fs.statSync(path);
 
       const {
@@ -360,7 +467,7 @@ class PrismaUploadModule extends PrismaModule {
         size,
       });
 
-      return await ctx.db.mutation.createFile({
+      return ctx.db.mutation.createFile({
         data: uploaded,
       }, info)
         .catch(error => {
