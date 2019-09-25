@@ -1,6 +1,7 @@
 
 import sharp from "sharp";
 import fs from "fs";
+import mime from 'mime-types';
 
 class ImagesMiddleware {
 
@@ -26,56 +27,94 @@ class ImagesMiddleware {
 
     if (fs.existsSync(abthPath)) {
 
-
-      let img = await sharp(abthPath)
-
-      let metadata;
+      const mimetype = mime.lookup(abthPath);
 
 
-      await img.metadata()
-        .then(function (result) {
+      const contentType = mimetype;
 
-          metadata = result;
-
-        })
+      // console.log("contentType", contentType);
 
 
-      await this.resizeImg(img, type, metadata)
-        .then(async () => {
+      let data;
 
-          const contentType = this.getContentType(metadata)
 
-          if (!contentType) {
-            res.status(500);
-            res.send("Can not get contentType");
+      switch (contentType) {
+
+        case "image/svg+xml":
+
+          break;
+
+        default: {
+
+          let img = await sharp(abthPath);
+
+          const metadata = await img.metadata()
+          // .then(function (result) {
+
+          //   metadata = result;
+
+          // });
+
+          data = await this.resizeImg(img, type, metadata)
+            .then(async () => {
+
+              // const contentType = this.getContentType(metadata);
+
+
+              if (!contentType) {
+                res.status(500);
+                res.send("Can not get contentType");
+                return;
+              }
+
+              return await img
+                .withMetadata()
+                .toBuffer()
+                // .then(data => {
+
+                //   res.status(200);
+                //   res.contentType(contentType);
+                //   res.send(data);
+
+                // })
+                .catch(e => {
+                  console.error(e);
+
+                  res.status(500);
+                  res.send(e.message);
+
+                });
+
+            })
+            .catch(error => {
+
+              res.status(500);
+              res.send(error.message);
+            });
+
+
+          if (!data) {
             return;
           }
 
-          await img
-            .withMetadata()
-            .toBuffer()
-            .then(data => {
+        }
 
-              res.status(200);
-              res.contentType(contentType);
-              res.send(data);
+      }
 
-            })
-            .catch(e => {
-              console.error(e);
 
-              res.status(500);
-              res.send(e.message);
 
-            });
 
-        })
-        .catch(error => {
 
-          res.status(500);
-          res.send(error.message);
-        });
+      if (data) {
 
+        res.status(200);
+        res.contentType(contentType);
+        res.send(data);
+      }
+      else {
+
+        res.sendFile(abthPath);
+      }
 
 
     }
@@ -109,8 +148,14 @@ class ImagesMiddleware {
       case 'thumb':
 
         img
-          .resize(150, 150)
-          .crop(sharp.gravity.north);
+          // .resize(150, 150)
+          .resize({
+            width: 150,
+            height: 150,
+            fit: "fill",
+            position: sharp.gravity.north,
+          });
+        // .crop(sharp.gravity.north);
 
         break;
 
@@ -119,8 +164,9 @@ class ImagesMiddleware {
 
         img
           .resize(200, 160)
-          .max()
-          .crop();
+          // .resize({ fit: "inside" })
+          .resize({ fit: "cover" })
+          ;
 
         break;
 
@@ -129,15 +175,16 @@ class ImagesMiddleware {
 
         img
           .resize(700, 430)
-          .max()
-          .crop();
+          .resize({ fit: "inside" })
+          .resize({ fit: "cover" });
 
         break;
 
 
       case 'big':
 
-        img.max();
+        img
+          .resize({ fit: "inside" });
         this.resizeMax(img, 1200, 1000, metadata);
 
         break;
@@ -154,8 +201,6 @@ class ImagesMiddleware {
 
   resizeMax(img, width, height, metadata) {
 
-    img
-
     const {
       width: originWidth,
       height: originHeight,
@@ -163,14 +208,18 @@ class ImagesMiddleware {
 
     if (width < originWidth || height < originHeight) {
 
-      img.max()
+      img
+        .resize({ fit: "inside" })
         .resize(width, height)
-        .max()
+        .resize({ fit: "inside" })
         ;
     }
   }
 
+
   getContentType(metadata) {
+
+    console.error("getContentType() deprecated");
 
     let contentType;
 

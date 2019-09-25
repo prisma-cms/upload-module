@@ -1,3 +1,7 @@
+1.6.0
+===============================
+- Return non-image files as raw file
+
 1.5.0
 ===============================
 - Added resolvers
