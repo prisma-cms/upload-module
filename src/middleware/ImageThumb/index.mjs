@@ -147,15 +147,18 @@ class ImagesMiddleware {
 
       case 'thumb':
 
+        // DeprecationWarning: crop(position) is deprecated, use resize({ fit: "cover", position }) instead
+
         img
           // .resize(150, 150)
+          // .crop(sharp.gravity.north);
           .resize({
             width: 150,
             height: 150,
-            fit: "fill",
+            // fit: "fill",
+            fit: "cover",
             position: sharp.gravity.north,
           });
-        // .crop(sharp.gravity.north);
 
         break;
 
@@ -163,10 +166,16 @@ class ImagesMiddleware {
       case 'small':
 
         img
-          .resize(200, 160)
-          // .resize({ fit: "inside" })
-          .resize({ fit: "cover" })
-          ;
+          // .resize(200, 160)
+          // // .resize({ fit: "inside" })
+          // .resize({ fit: "cover" })
+          // ;
+          .resize({
+            width: 200,
+            height: 160,
+            fit: "inside",
+            // position: sharp.gravity.north,
+          })
 
         break;
 
@@ -174,9 +183,15 @@ class ImagesMiddleware {
       case 'middle':
 
         img
-          .resize(700, 430)
-          .resize({ fit: "inside" })
-          .resize({ fit: "cover" });
+          // .resize(700, 430)
+          // .resize({ fit: "inside" })
+          // .resize({ fit: "cover" });
+          .resize({
+            width: 700,
+            height: 430,
+            fit: "inside",
+            // position: sharp.gravity.north,
+          })
 
         break;
 

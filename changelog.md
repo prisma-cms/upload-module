@@ -1,3 +1,7 @@
+1.6.1
+===============================
+- Fix image resizing
+
 1.6.0
 ===============================
 - Return non-image files as raw file
