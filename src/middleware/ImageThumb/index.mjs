@@ -102,17 +102,15 @@ class ImagesMiddleware {
       }
 
 
-
-
-
       if (data) {
 
         res.status(200);
         res.contentType(contentType);
+        res.append('Cache-Control', `public, max-age=${1000000}`)
         res.send(data);
       }
       else {
-
+        res.append('Cache-Control', `public, max-age=${1000000}`)
         res.sendFile(abthPath);
       }
 
