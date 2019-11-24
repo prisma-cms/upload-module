@@ -1,3 +1,8 @@
+1.6.4
+===============================
+- Move sharp into main deps
+- Upgrade sharp
+
 1.6.3
 ===============================
 - Move sharp into dev deps
