@@ -1,0 +1,20 @@
+
+type GalleryResponse{
+  success: Boolean!
+  message: String
+  errors: [Error!]!
+  data: Gallery
+}
+
+type Mutation {
+
+  createGalleryProcessor(
+    data: GalleryCreateInput!
+  ): GalleryResponse!
+
+  updateGalleryProcessor(
+    data: GalleryUpdateInput!
+    where: GalleryWhereUniqueInput!
+  ): GalleryResponse!
+
+}

@@ -1,8 +1,8 @@
 
 
 type File {
-  id: ID! @unique
-  path: String!
+  id: ID! @id @unique
+  path: String! @unique
   name: String
   filename: String @deprecated(reason: "Will be removed soon")
   mimetype: String!
@@ -10,6 +10,10 @@ type File {
   # CreatedBy: User! @relation(name: "UserFiles")
 
   # Используется для фиксации уникальных файлов
-  hash: String
+  hash: String @unique
   size: Float @default(value: 0)
+
+  """Индекс сортировки"""
+  rank: Int
+  Gallery: Gallery @relation(name: "GalleryFiles")
 }

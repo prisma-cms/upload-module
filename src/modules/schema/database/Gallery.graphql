@@ -1,0 +1,9 @@
+
+type Gallery {
+  id: ID! @id @unique
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  name: String
+  Files: [File!]! @relation(name: "GalleryFiles" onDelete: SET_NULL)
+  CreatedBy: User
+}

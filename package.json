@@ -1,7 +1,7 @@
 {
   "name": "@prisma-cms/upload-module",
   "description": "Upload module for @prisma-cms/server",
-  "version": "1.6.4",
+  "version": "1.7.0",
   "main": "src/",
   "files": [
     "src"
@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@prisma-cms/server": "latest",
+    "@prisma-cms/upload-module": "latest",
     "expect": "^23.6.0",
     "graphql": "*",
     "mocha": "^5.2.0",
