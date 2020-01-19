@@ -1,7 +1,7 @@
 {
   "name": "@prisma-cms/upload-module",
   "description": "Upload module for @prisma-cms/server",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "main": "src/",
   "files": [
     "src"
@@ -21,12 +21,12 @@
     "chalk": "^2.4.1",
     "merge-graphql-schemas": "latest",
     "mime-types": "^2.1.24",
-    "sharp": "^0.23.3",
+    "sharp": "latest",
     "shortid": "^2.2.13"
   },
   "devDependencies": {
     "@prisma-cms/server": "latest",
-    "@prisma-cms/upload-module": "latest",
+    "@prisma-cms/user-module": "^1.3.10",
     "expect": "^23.6.0",
     "graphql": "*",
     "mocha": "^5.2.0",
