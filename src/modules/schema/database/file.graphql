@@ -2,6 +2,8 @@
 
 type File {
   id: ID! @id @unique
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
   path: String! @unique
   name: String
   filename: String @deprecated(reason: "Will be removed soon")
