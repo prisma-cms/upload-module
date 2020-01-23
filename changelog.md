@@ -1,3 +1,8 @@
+1.7.2
+===============================
+- Added File::createdAt
+- Added File::updatedAt
+
 1.7.1
 ===============================
 - Upgrade sharp
